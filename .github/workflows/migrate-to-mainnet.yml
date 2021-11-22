@@ -1,4 +1,4 @@
-name: Build & Migrate to Testnet
+name: Build & Migrate to Mainnet
 
 env:
   WALLET_SECRET: ${{ secrets.PROD_WALLET_SECRET }} # Set Deployer wallet secret
