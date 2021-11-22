@@ -14,7 +14,7 @@ on:
     
 jobs:
   build-push:
-    name: "Build & Migrate to Mainnet"
+    name: "Build & Migrate to Testnet"
     runs-on: ubuntu-latest
     
     strategy:

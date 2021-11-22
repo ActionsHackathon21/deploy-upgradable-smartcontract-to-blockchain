@@ -43,7 +43,7 @@ module.exports = {
       network_id: process.env.NETWORK_ID,
       confirmations: process.env.CONFIRMATIONS,
       skipDryRun: true,
-      networkCheckTimeout: 1000000000
+      networkCheckTimeout: 1000000000,
     },
   },
 
