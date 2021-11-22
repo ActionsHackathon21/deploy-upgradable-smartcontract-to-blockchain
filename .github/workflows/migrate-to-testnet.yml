@@ -90,6 +90,8 @@ jobs:
     # Migrate built binaries to the blockchain
     - name: Migrate to blockchain
       run: |
+        export DEPLOY_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+        
         if test -f "build/DEPLOYED_ADDRESS.txt"; then 
           export DEPLOYED_ADDRESS=$(cat build/DEPLOYED_ADDRESS.txt); 
           echo "- DEPLOYED_ADDRESS: $DEPLOYED_ADDRESS";
