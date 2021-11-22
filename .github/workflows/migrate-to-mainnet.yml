@@ -6,7 +6,7 @@ env:
   NETWORK_ID: 322 # Mainnet Network ID
   CONFIRMATIONS: 1 # Confirmation blocks required
 
-  DEPLOY_BRANCH_POSTFIX: deployed # Configure the destination branch postfix (code on "main" branch will be built and pushed into "main-POSTFIX" branch)
+  DEPLOY_BRANCH: main-deployed # Configure the deployed branch
   
 on:
   push:
@@ -67,8 +67,6 @@ jobs:
     # Sync the deployed branch before pushing new data
     - name: Synchronize deployed branch
       run: |
-        export DEPLOY_BRANCH=$GITHUB_REF_NAME-$DEPLOY_BRANCH_POSTFIX
-
         mkdir DEPLOYED
         mv .git DEPLOYED/.git
         cd DEPLOYED
@@ -102,7 +100,6 @@ jobs:
     # Update built artifacts to the deployed branch
     - name: Push build into deployed branch
       run: |
-        export DEPLOY_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
         export GIT_COMMIT=$(git rev-parse --short HEAD)
 
         mkdir DEPLOYING
@@ -110,11 +107,11 @@ jobs:
         mv build DEPLOYING/build
         mv .openzeppelin DEPLOYING/.openzeppelin
 
-        echo "Pushing build $GIT_COMMIT to $DEPLOY_BRANCH"
+        echo "Pushing build $GIT_COMMIT to $DEPLOY_BRANCH ($GITHUB_REF_NAME)"
         mv .git DEPLOYING/.git
         cd DEPLOYING
         git add -A
-        git commit -m "Automated build $GIT_COMMIT"
+        git commit -m "Automated build $GIT_COMMIT ($GITHUB_REF_NAME)"
         git push origin $DEPLOY_BRANCH
         cd ..
 
