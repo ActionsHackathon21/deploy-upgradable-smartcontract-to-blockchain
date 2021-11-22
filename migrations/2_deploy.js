@@ -14,7 +14,7 @@ module.exports = async function (deployer, network, accounts) {
     console.log('Deployed', contract.address)
 
     fs.writeFileSync(__dirname + '/../build/README.md', `
-**Deployed Address:** [${contract.address}](https://contract.mph.am/?json=https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}-${process.env.DEPLOY_BRANCH_POSTFIX}/build/contracts/HelloWorld.json)
+**Deployed Address:** [${contract.address}](https://contract.mph.am/?json=https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.DEPLOY_BRANCH}/build/contracts/HelloWorld.json)
     `)
     fs.writeFileSync(__dirname + '/../build/DEPLOYED_ADDRESS.txt', contract.address)
   }

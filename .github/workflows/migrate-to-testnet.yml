@@ -117,3 +117,19 @@ jobs:
         git commit -m "Automated build $GIT_COMMIT"
         git push origin $DEPLOY_BRANCH
         cd ..
+
+    # Prepare release files from arifacts
+    - name: Prepare pre-release files
+      run: |
+        cd DEPLOYING/build/contracts && tar -zcf ../../../prerelease-$GITHUB_REF_NAME.tar.gz . && cd ../../../
+
+    # Pre-Release Contract's artifacts
+    - name: Pre-Release artifacts
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "pre-release"
+        prerelease: true
+        title: "Pre-release artifacts"
+        files: |
+          prerelease-${{ github.ref_name }}.tar.gz
