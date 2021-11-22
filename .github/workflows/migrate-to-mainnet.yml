@@ -2,9 +2,9 @@ name: Build & Migrate to Mainnet
 
 env:
   WALLET_SECRET: ${{ secrets.PROD_WALLET_SECRET }} # Set Deployer wallet secret
-  RPC: https://rpc-testnet.kcc.network # Mainnet RPC
-  NETWORK_ID: 322 # Mainnet Network ID
-  CONFIRMATIONS: 1 # Confirmation blocks required
+  RPC: https://rpc-mainnet.kcc.network # Mainnet RPC
+  NETWORK_ID: 321 # Mainnet Network ID
+  CONFIRMATIONS: 10 # Confirmation blocks required
 
   DEPLOY_BRANCH: main-deployed # Configure the deployed branch
   
