@@ -1,0 +1,17 @@
+{
+  "name": "helloworld",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "truffle compile",
+    "migrate": "truffle migrate",
+    "test": "truffle test"
+  },
+  "dependencies": {
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "@openzeppelin/truffle-upgrades": "^1.11.0",
+    "@truffle/hdwallet-provider": "^1.6.0",
+    "chai": "^4.3.4",
+    "truffle": "^5.4.21"
+  }
+}

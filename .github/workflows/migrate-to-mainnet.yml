@@ -1,0 +1,120 @@
+name: Build & Migrate to Testnet
+
+env:
+  WALLET_SECRET: ${{ secrets.PROD_WALLET_SECRET }} # Set Deployer wallet secret
+  RPC: https://rpc-testnet.kcc.network # Mainnet RPC
+  NETWORK_ID: 322 # Mainnet Network ID
+  CONFIRMATIONS: 1 # Confirmation blocks required
+
+  DEPLOY_BRANCH_POSTFIX: deployed # Configure the destination branch postfix (code on "main" branch will be built and pushed into "main-POSTFIX" branch)
+  
+on:
+  push:
+    tags:
+      - "v*" # Configure the tag (v* for release tag, like v0.0.1) which you want to run this workflow
+    
+jobs:
+  build-push:
+    name: "Build & Migrate to Testnet"
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [lts/*]
+
+    # Checkout source code
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    # Setup Nodejs
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    # Setup yarn
+    - name: Install yarn
+      run: npm install -g yarn
+      
+    # Cache dependencies for faster build time in future
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ./node_modules
+          ./.yarn
+        key: ${{ runner.os }}-modules-${{ hashFiles('./yarn.lock') }}
+
+    # Install GYP as build dependencies
+    - name: Install GYP
+      run: |
+        npm install node-gyp -g
+        npm install node-gyp-build -g
+
+    # Install project dependencies
+    - name: Install dependencies
+      run: |
+        yarn install --prefer-offline --pure-lockfile --cache-folder .yarn --modules-folder node_modules
+
+    # Configure Git informations
+    - name: Configure Git informations
+      run: |
+        git config --global user.name $GITHUB_ACTOR
+        git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
+
+    # Sync the deployed branch before pushing new data
+    - name: Synchronize deployed branch
+      run: |
+        export GIT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+        export DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
+
+        mkdir DEPLOYED
+        mv .git DEPLOYED/.git
+        cd DEPLOYED
+        echo "Checking out $DEPLOY_BRANCH"
+        git checkout -b $DEPLOY_BRANCH
+        git stash && git stash drop
+        (git pull --depth 1 origin $DEPLOY_BRANCH --rebase -X theirs --allow-unrelated-histories) || (echo "Deployed branch not exists")
+        mv ./.git ../.git
+        cd ..
+        (cp -r DEPLOYED/README.md DEPLOYED/build/README.md) || (echo "README.md not exists")
+        (cp -r DEPLOYED/build .) || (echo "build directory not exists")
+        (cp -r DEPLOYED/.openzeppelin .) || (echo "openzeppelin directory not exists")
+
+    # Build the contracts
+    - name: Build contracts
+      run: |
+        yarn build
+        
+    # Migrate built binaries to the blockchain
+    - name: Migrate to blockchain
+      run: |
+        if test -f "build/DEPLOYED_ADDRESS.txt"; then 
+          export DEPLOYED_ADDRESS=$(cat build/DEPLOYED_ADDRESS.txt); 
+          echo "- DEPLOYED_ADDRESS: $DEPLOYED_ADDRESS";
+        else
+          echo "No DEPLOYED_ADDRESS detected";
+        fi
+        
+        yarn migrate --reset
+
+    # Update built artifacts to the deployed branch
+    - name: Push build into deployed branch
+      run: |
+        export DEPLOY_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+        export GIT_COMMIT=$(git rev-parse --short HEAD)
+
+        mkdir DEPLOYING
+        (mv build/README.md DEPLOYING/README.md) || (echo "README.md not exists")
+        mv build DEPLOYING/build
+        mv .openzeppelin DEPLOYING/.openzeppelin
+
+        echo "Pushing build $GIT_COMMIT to $DEPLOY_BRANCH"
+        mv .git DEPLOYING/.git
+        cd DEPLOYING
+        git add -A
+        git commit -m "Automated build $GIT_COMMIT"
+        git push origin $DEPLOY_BRANCH
+        cd ..
