@@ -29,7 +29,7 @@ Check the complete workflow here:
 - To config the blockchain you want to deploy to, use the `WALLET_SECRET` , `RPC`, `NETWORK_ID` and `CONFIRMATIONS` variables
 **Important!** You should store the wallet secret in GitHub's secret (**Settings** > **Secrets**). On this project, I stored as `DEV_WALLET_SECRET` and `PROD_WALLET_SECRET` secrets
 
-![Config](https://github.com/ActionsHackathon21/deploy-upgradable-smartcontract-to-blockchain/raw/main/docs/screenshot3.png)
+![Screenshot](https://github.com/ActionsHackathon21/deploy-upgradable-smartcontract-to-blockchain/raw/main/docs/secret.png)
 
 
 ## Flows
