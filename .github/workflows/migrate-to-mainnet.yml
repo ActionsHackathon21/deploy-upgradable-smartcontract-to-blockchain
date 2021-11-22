@@ -67,8 +67,7 @@ jobs:
     # Sync the deployed branch before pushing new data
     - name: Synchronize deployed branch
       run: |
-        export GIT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-        export DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
+        export DEPLOY_BRANCH=$GITHUB_REF_NAME-$DEPLOY_BRANCH_POSTFIX
 
         mkdir DEPLOYED
         mv .git DEPLOYED/.git
@@ -118,3 +117,17 @@ jobs:
         git commit -m "Automated build $GIT_COMMIT"
         git push origin $DEPLOY_BRANCH
         cd ..
+
+    # Prepare release files from arifacts
+    - name: Prepare release files
+      run: |
+        cd DEPLOYING/build/contracts && tar -zcf ../../../release-$GITHUB_REF_NAME.tar.gz . && cd ../../../
+
+    # Release Contract's artifacts
+    - name: Release artifacts
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        files: |
+          release-${{ github.ref_name }}.tar.gz
