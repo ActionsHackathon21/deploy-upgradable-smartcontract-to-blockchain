@@ -1,0 +1,53 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x9400fc625B4A53F1E1dFfD1B13A007e5Ef20E2AB",
+    "txHash": "0xdb83181dc991314c25d0c28df96a20faf0f1decd5d85f6eadb242f3a29748452"
+  },
+  "proxies": [
+    {
+      "address": "0xEd3cBd9C3F7f4AE6226A8AC570fbEBeFD100B30E",
+      "txHash": "0x013bebd7dfe092f2f969f4e00ac66497a6ed97d0beff424cd3d6b8f5850005a7",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "de76ad2531c55a0a93c3067f536ef66901923b28aca3acf88526bb26fbb24a6a": {
+      "address": "0x029f286C3aa9258ed3306AA65B2b3C137d216cf6",
+      "txHash": "0x74497dc9cd3fffd08e93ef87bb427520e661640cddfc4c0bd1f9515b0cfc8388",
+      "layout": {
+        "storage": [
+          {
+            "contract": "HelloWorld",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../project:/contracts/HelloWorld.sol:5"
+          },
+          {
+            "contract": "HelloWorld",
+            "label": "lastName",
+            "type": "t_string_storage",
+            "src": "../project:/contracts/HelloWorld.sol:7"
+          },
+          {
+            "contract": "HelloWorld",
+            "label": "owner",
+            "type": "t_address_payable",
+            "src": "../project:/contracts/HelloWorld.sol:8"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_string_storage": {
+            "label": "string"
+          },
+          "t_address_payable": {
+            "label": "address payable"
+          }
+        }
+      }
+    }
+  }
+}
